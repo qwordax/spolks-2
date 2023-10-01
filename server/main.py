@@ -1,19 +1,22 @@
 import logging
 import socket
+import sys
 import time
 
 BUFSIZ = 1024
 
 def main():
-    address = input('address: ')
-    port = int(input('port: '))
+    if len(sys.argv) != 3:
+        print('usage: {0} <address> <port>'.format(sys.argv[0]))
+        return
+
+    address = sys.argv[1]
+    port = int(sys.argv[2])
 
     logging.basicConfig(
         level=logging.INFO,
         format='%(levelname)-5s : %(message)s'
         )
-
-    print('. . .')
 
     sock = socket.socket()
 
@@ -24,6 +27,8 @@ def main():
     working = True
 
     while working:
+        logging.info('accepting . . .')
+
         conn, address = sock.accept()
         logging.info(f'accepted {address[0] + ":" + str(address[1])}')
 
@@ -52,6 +57,7 @@ def main():
         logging.info(f'closed {address[0] + ":" + str(address[1])}')
         conn.close()
 
+    logging.info('closing . . .')
     sock.close()
 
 if __name__ == "__main__":

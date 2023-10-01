@@ -1,12 +1,15 @@
 import socket
+import sys
 
 BUFSIZ = 1024
 
 def main():
-    address = input('address: ')
-    port = int(input('port: '))
+    if len(sys.argv) != 3:
+        print('usage: {0} <address> <port>'.format(sys.argv[0]))
+        return
 
-    print('. . .')
+    address = sys.argv[1]
+    port = int(sys.argv[2])
 
     sock = socket.socket()
 
