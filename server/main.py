@@ -34,23 +34,28 @@ def main():
 
         while True:
             command = conn.recv(BUFSIZ).decode('ascii')
+            args = command.strip().split()
 
-            if command == 'close\n':
+            if args[0] == 'close':
                 working = False
                 break
 
-            if command == 'exit\n' or command == 'quit\n':
+            if args[0] == 'exit' or args[0] == 'quit':
                 break
 
-            if command[:4] == 'echo':
-                logging.info(command.strip())
-                response = '\n'.join(command[5:].split()) + '\n'
-            elif command[:5] == 'time\n':
-                logging.info(command.strip())
-                response = time.ctime() + '\n'
+            if args[0] == 'echo':
+                logging.info(' '.join(args))
+                response = '\n'.join(args[1:]) + '\n'
+            elif args[0] == 'time':
+                logging.info(' '.join(args))
+
+                if len(args) > 1:
+                    response = 'usage: time\n'
+                else:
+                    response = time.ctime() + '\n'
             else:
-                logging.error(f'unknown command \'{command.strip()}\'')
-                response = f'error: unknown command \'{command.strip()}\'\n'
+                logging.error(f'unknown command \'{" ".join(args)}\'')
+                response = f'error: unknown command \'{" ".join(args)}\'\n'
 
             conn.send(response.encode('ascii'))
 
