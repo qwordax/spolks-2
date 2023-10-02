@@ -49,10 +49,24 @@ def main():
             elif args[0] == 'time':
                 logging.info(' '.join(args))
 
-                if len(args) > 1:
+                if len(args) != 1:
                     response = 'usage: time\n'
                 else:
                     response = time.ctime() + '\n'
+            elif args[0] == 'upload':
+                logging.info(' '.join(args))
+
+                if len(args) != 2:
+                    response = 'usage: upload <file>\n'
+                else:
+                    response = '\n'
+            elif args[0] == 'download':
+                logging.info(' '.join(args))
+
+                if len(args) != 2:
+                    response = 'usage: download <file>\n'
+                else:
+                    response = '\n'
             else:
                 logging.error(f'unknown command \'{" ".join(args)}\'')
                 response = f'error: unknown command \'{" ".join(args)}\'\n'
