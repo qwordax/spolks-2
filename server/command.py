@@ -1,5 +1,4 @@
 import logging
-import os
 import time
 
 def server_echo(conn, args):
