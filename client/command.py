@@ -36,7 +36,25 @@ def client_upload(sock, args):
             sock.send(data)
 
 def client_download(sock, args):
-    pass
+    if len(args) != 2:
+        print('usage: download <file>')
+        return
+
+    sock.send(' '.join(args).encode('ascii'))
+    response = sock.recv(BUFSIZE).decode('ascii')
+
+    if response == 'not exists':
+        print(f'error: \'{args[1]}\' does not exists')
+        return
+
+    file_name = sock.recv(BUFSIZE).decode('ascii')
+    file_size = int(sock.recv(BUFSIZE).decode('ascii'))
+
+    with open(file_name, 'wb') as file:
+        size = 0
+
+        while size < file_size:
+            size += file.write(sock.recv(BUFSIZE))
 
 def client_unknown(sock, args):
     sock.send(' '.join(args).encode('ascii'))

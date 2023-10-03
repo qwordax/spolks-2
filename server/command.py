@@ -1,4 +1,5 @@
 import logging
+import os
 import time
 
 BUFSIZE = 256
@@ -13,7 +14,7 @@ def server_time(conn, args):
 
 def server_upload(conn, args):
     file_name = conn.recv(BUFSIZE).decode('ascii')
-    file_size = int(str(conn.recv(BUFSIZE).decode('ascii')))
+    file_size = int(conn.recv(BUFSIZE).decode('ascii'))
 
     with open(file_name, 'wb') as file:
         size = 0
@@ -22,7 +23,21 @@ def server_upload(conn, args):
             size += file.write(conn.recv(BUFSIZE))
 
 def server_download(conn, args):
-    pass
+    if not os.path.exists(args[1]):
+        conn.send('not exists'.encode('ascii'))
+        return
+
+    conn.send('exists'.encode('ascii'))
+
+    file_name = args[1]
+    file_size = os.path.getsize(args[1])
+
+    conn.send(file_name.encode('ascii'))
+    conn.send(str(file_size).encode('ascii'))
+
+    with open(file_name, mode='rb') as file:
+        for data in iter(lambda: file.read(BUFSIZE), b''):
+            conn.send(data)
 
 def server_unknown(conn, args):
     logging.error(f'unknown command \'{" ".join(args)}\'')
