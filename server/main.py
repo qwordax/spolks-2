@@ -43,6 +43,8 @@ def main():
             if args[0] == 'exit' or args[0] == 'quit':
                 break
 
+            logging.info(' '.join(args))
+
             if args[0] == 'echo':
                 response = command.command_echo(args)
             elif args[0] == 'time':
