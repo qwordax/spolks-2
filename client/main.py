@@ -16,14 +16,14 @@ def main():
     sock.connect((address, port))
 
     while True:
-        command = ' '.join(input('> ').split()) + '\n'
+        args = input('> ').split()
 
-        if command == '\n':
+        if args == []:
             continue
 
-        sock.send(command.encode('ascii'))
+        sock.send(' '.join(args).encode('ascii'))
 
-        if command == 'close\n' or command == 'exit\n' or command == 'quit\n':
+        if args[0] == 'close' or args[0] == 'exit' or args[0] == 'quit':
             break
 
         print(sock.recv(BUFSIZ).decode('ascii'), end='')
