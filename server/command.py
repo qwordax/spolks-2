@@ -1,33 +1,23 @@
 import logging
+import os
 import time
 
-def server_echo(args):
-    return '\n'.join(args[1:]) + '\n'
+def server_echo(conn, args):
+    response = '\n'.join(args[1:]) + '\n'
+    conn.send(response.encode('ascii'))
 
-def server_time(args):
-    if len(args) != 1:
-        response = 'usage: time\n'
-    else:
-        response = time.ctime() + '\n'
+def server_time(conn, args):
+    response = time.ctime() + '\n'
+    conn.send(response.encode('ascii'))
 
-    return response
+def server_upload(conn, args):
+    pass
 
-def server_upload(args):
-    if len(args) != 2:
-        response = 'usage: upload <file>\n'
-    else:
-        response = '\n'
+def server_download(conn, args):
+    pass
 
-    return response
-
-def server_download(args):
-    if len(args) != 2:
-        response = 'usage: download <file>\n'
-    else:
-        response = '\n'
-
-    return response
-
-def server_unknown(args):
+def server_unknown(conn, args):
     logging.error(f'unknown command \'{" ".join(args)}\'')
-    return f'error: unknown command \'{" ".join(args)}\'\n'
+
+    response = f'error: unknown command \'{" ".join(args)}\'\n'
+    conn.send(response.encode('ascii'))
