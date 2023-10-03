@@ -32,7 +32,7 @@ def main():
         logging.info(f'accepted {address[0] + ":" + str(address[1])}')
 
         while True:
-            args = conn.recv(256).decode('ascii').split()
+            args = conn.recv(command.BUFSIZE).decode('ascii').split()
 
             if args[0] == 'close':
                 working = False

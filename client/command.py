@@ -1,6 +1,6 @@
 import os
 
-BUFSIZE = 256
+BUFSIZE = 1024
 
 def client_echo(sock, args):
     sock.send(' '.join(args).encode('ascii'))
@@ -28,12 +28,16 @@ def client_upload(sock, args):
     file_name = args[1]
     file_size = os.path.getsize(args[1])
 
-    sock.send(file_name.encode('ascii'))
-    sock.send(str(file_size).encode('ascii'))
+    file_info = file_name + ' ' + str(file_size)
+    sock.send(file_info.encode('ascii'))
+
+    print('upload: started')
 
     with open(file_name, mode='rb') as file:
         for data in iter(lambda: file.read(BUFSIZE), b''):
             sock.send(data)
+
+    print('upload: ended')
 
 def client_download(sock, args):
     if len(args) != 2:
@@ -47,14 +51,20 @@ def client_download(sock, args):
         print(f'error: \'{args[1]}\' does not exists')
         return
 
-    file_name = sock.recv(BUFSIZE).decode('ascii')
-    file_size = int(sock.recv(BUFSIZE).decode('ascii'))
+    file_info = sock.recv(BUFSIZE).decode('ascii').split()
+
+    file_name = file_info[0]
+    file_size = int(file_info[1])
+
+    print('download: started')
 
     with open(file_name, 'wb') as file:
         size = 0
 
         while size < file_size:
             size += file.write(sock.recv(BUFSIZE))
+
+    print('download: ended')
 
 def client_unknown(sock, args):
     sock.send(' '.join(args).encode('ascii'))
