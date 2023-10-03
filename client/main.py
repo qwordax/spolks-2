@@ -1,6 +1,8 @@
 import socket
 import sys
 
+import command
+
 BUFSIZ = 1024
 
 def main():
@@ -25,6 +27,11 @@ def main():
 
         if args[0] == 'close' or args[0] == 'exit' or args[0] == 'quit':
             break
+
+        if args[0] == 'upload':
+            command.client_upload(args)
+        elif args[0] == 'download':
+            command.client_download(args)
 
         print(sock.recv(BUFSIZ).decode('ascii'), end='')
 
