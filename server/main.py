@@ -1,7 +1,8 @@
 import logging
 import socket
 import sys
-import time
+
+import command
 
 BUFSIZ = 1024
 
@@ -33,8 +34,7 @@ def main():
         logging.info(f'accepted {address[0] + ":" + str(address[1])}')
 
         while True:
-            command = conn.recv(BUFSIZ).decode('ascii')
-            args = command.strip().split()
+            args = conn.recv(BUFSIZ).decode('ascii').strip().split()
 
             if args[0] == 'close':
                 working = False
@@ -44,32 +44,15 @@ def main():
                 break
 
             if args[0] == 'echo':
-                logging.info(' '.join(args))
-                response = '\n'.join(args[1:]) + '\n'
+                response = command.command_echo(args)
             elif args[0] == 'time':
-                logging.info(' '.join(args))
-
-                if len(args) != 1:
-                    response = 'usage: time\n'
-                else:
-                    response = time.ctime() + '\n'
+                response = command.command_time(args)
             elif args[0] == 'upload':
-                logging.info(' '.join(args))
-
-                if len(args) != 2:
-                    response = 'usage: upload <file>\n'
-                else:
-                    response = '\n'
+                response = command.command_upload(args)
             elif args[0] == 'download':
-                logging.info(' '.join(args))
-
-                if len(args) != 2:
-                    response = 'usage: download <file>\n'
-                else:
-                    response = '\n'
+                response = command.command_download(args)
             else:
-                logging.error(f'unknown command \'{" ".join(args)}\'')
-                response = f'error: unknown command \'{" ".join(args)}\'\n'
+                response = command.command_unknown(args)
 
             conn.send(response.encode('ascii'))
 
