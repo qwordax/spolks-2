@@ -17,7 +17,7 @@ def main():
         format='%(levelname)-5s : %(message)s'
         )
 
-    sock = socket.socket()
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     sock.bind((address, port))
 

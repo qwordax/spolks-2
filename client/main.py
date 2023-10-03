@@ -11,7 +11,7 @@ def main():
     address = sys.argv[1]
     port = int(sys.argv[2])
 
-    sock = socket.socket()
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     sock.connect((address, port))
 
