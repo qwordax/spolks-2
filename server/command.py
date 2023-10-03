@@ -1,10 +1,10 @@
 import logging
 import time
 
-def command_echo(args):
+def server_echo(args):
     return '\n'.join(args[1:]) + '\n'
 
-def command_time(args):
+def server_time(args):
     if len(args) != 1:
         response = 'usage: time\n'
     else:
@@ -12,7 +12,7 @@ def command_time(args):
 
     return response
 
-def command_upload(args):
+def server_upload(args):
     if len(args) != 2:
         response = 'usage: upload <file>\n'
     else:
@@ -20,7 +20,7 @@ def command_upload(args):
 
     return response
 
-def command_download(args):
+def server_download(args):
     if len(args) != 2:
         response = 'usage: download <file>\n'
     else:
@@ -28,6 +28,6 @@ def command_download(args):
 
     return response
 
-def command_unknown(args):
+def server_unknown(args):
     logging.error(f'unknown command \'{" ".join(args)}\'')
     return f'error: unknown command \'{" ".join(args)}\'\n'

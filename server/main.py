@@ -46,15 +46,15 @@ def main():
             logging.info(' '.join(args))
 
             if args[0] == 'echo':
-                response = command.command_echo(args)
+                response = command.server_echo(args)
             elif args[0] == 'time':
-                response = command.command_time(args)
+                response = command.server_time(args)
             elif args[0] == 'upload':
-                response = command.command_upload(args)
+                response = command.server_upload(args)
             elif args[0] == 'download':
-                response = command.command_download(args)
+                response = command.server_download(args)
             else:
-                response = command.command_unknown(args)
+                response = command.server_unknown(args)
 
             conn.send(response.encode('ascii'))
 
