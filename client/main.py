@@ -21,20 +21,24 @@ def main():
         if args == []:
             continue
 
-        if args[0] == 'close' or args[0] == 'exit' or args[0] == 'quit':
-            sock.send(' '.join(args).encode('ascii'))
-            break
+        try:
+            if args[0] == 'close' or args[0] == 'exit' or args[0] == 'quit':
+                sock.send(' '.join(args).encode('ascii'))
+                break
 
-        if args[0] == 'echo':
-            command.client_echo(sock, args)
-        elif args[0] == 'time':
-            command.client_time(sock, args)
-        elif args[0] == 'upload':
-            command.client_upload(sock, args)
-        elif args[0] == 'download':
-            command.client_download(sock, args)
-        else:
-            command.client_unknown(sock, args)
+            if args[0] == 'echo':
+                command.client_echo(sock, args)
+            elif args[0] == 'time':
+                command.client_time(sock, args)
+            elif args[0] == 'upload':
+                command.client_upload(sock, args)
+            elif args[0] == 'download':
+                command.client_download(sock, args)
+            else:
+                command.client_unknown(sock, args)
+        except ConnectionAbortedError:
+            print('error: connection aborted')
+            break
 
     sock.close()
 

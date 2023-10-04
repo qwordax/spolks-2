@@ -17,6 +17,8 @@ def main():
         format='%(levelname)-5s : %(message)s'
         )
 
+    socket.setdefaulttimeout(30)
+
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     sock.bind((address, port))
@@ -31,31 +33,34 @@ def main():
         conn, address = sock.accept()
         logging.info(f'accepted {address[0] + ":" + str(address[1])}')
 
-        while True:
-            args = conn.recv(command.BUFSIZE).decode('ascii').split()
+        try:
+            while True:
+                args = conn.recv(command.BUFSIZE).decode('ascii').split()
 
-            if args[0] == 'close':
-                working = False
-                break
+                if args[0] == 'close':
+                    working = False
+                    break
 
-            if args[0] == 'exit' or args[0] == 'quit':
-                break
+                if args[0] == 'exit' or args[0] == 'quit':
+                    break
 
-            logging.info(' '.join(args))
+                logging.info(' '.join(args))
 
-            if args[0] == 'echo':
-                command.server_echo(conn, args)
-            elif args[0] == 'time':
-                command.server_time(conn, args)
-            elif args[0] == 'upload':
-                command.server_upload(conn, args)
-            elif args[0] == 'download':
-                command.server_download(conn, args)
-            else:
-                command.server_unknown(conn, args)
-
-        logging.info(f'closed {address[0] + ":" + str(address[1])}')
-        conn.close()
+                if args[0] == 'echo':
+                    command.server_echo(conn, args)
+                elif args[0] == 'time':
+                    command.server_time(conn, args)
+                elif args[0] == 'upload':
+                    command.server_upload(conn, args)
+                elif args[0] == 'download':
+                    command.server_download(conn, args)
+                else:
+                    command.server_unknown(conn, args)
+        except TimeoutError:
+            logging.error(f'timed out {address[0] + ":" + str(address[1])}')
+        finally:
+            logging.info(f'closed {address[0] + ":" + str(address[1])}')
+            conn.close()
 
     logging.info('closing . . .')
     sock.close()
