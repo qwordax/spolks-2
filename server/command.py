@@ -38,8 +38,14 @@ def server_upload(conn):
             else:
                 size += file.write(conn.recv(BUFSIZE))
 
+            if i % 512 == 0:
+                logging.info(
+                    f'{int(100 * (size + oob_size) / file_size):3d} %'
+                    )
+
             i += 1
 
+        logging.info('100 %')
         logging.info(f'received {size:,.0f} + {oob_size:,.0f} bytes')
         logging.info(f'uploaded \'{file_name}\'')
 
@@ -78,8 +84,14 @@ def server_download(conn, args):
                 conn.send(data)
                 size += len(data)
 
+            if i % 512 == 0:
+                logging.info(
+                    f'{int(100 * (size + oob_size) / file_size):3d} %'
+                    )
+
             i += 1
 
+        logging.info('100 %')
         logging.info(f'transmitted {size:,.0f} + {oob_size:,.0f} bytes')
         logging.info(f'downloaded \'{file_name}\'')
 

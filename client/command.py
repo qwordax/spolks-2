@@ -54,8 +54,14 @@ def client_upload(sock, args):
                 sock.send(data)
                 size += len(data)
 
+            if i % 512 == 0:
+                print(
+                    f'upload: {int(100 * (size + oob_size) / file_size):3d} %'
+                    )
+
             i += 1
 
+        print('upload: 100 %')
         print(f'upload: transmitted {size:,.0f} + {oob_size:,.0f} bytes')
         print('upload: ended')
 
@@ -95,8 +101,14 @@ def client_download(sock, args):
             else:
                 size += file.write(sock.recv(BUFSIZE))
 
+            if i % 512 == 0:
+                print(
+                    f'download: {int(100 * (size + oob_size) / file_size):3d} %'
+                    )
+
             i += 1
 
+        print('download: 100 %')
         print(f'download: received {size:,.0f} + {oob_size:,.0f} bytes')
         print('download: ended')
 
