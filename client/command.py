@@ -34,9 +34,13 @@ def client_upload(sock, args):
     print('upload: started')
 
     with open(file_name, mode='rb') as file:
+        size = 0
+
         for data in iter(lambda: file.read(BUFSIZE), b''):
             sock.send(data)
+            size += len(data)
 
+    print(f'upload: transmitted {size} bytes')
     print('upload: ended')
 
 def client_download(sock, args):
@@ -64,6 +68,7 @@ def client_download(sock, args):
         while size < file_size:
             size += file.write(sock.recv(BUFSIZE))
 
+    print(f'download: received {size} bytes')
     print('download: ended')
 
 def client_unknown(sock, args):

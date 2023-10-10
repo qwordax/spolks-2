@@ -26,6 +26,7 @@ def server_upload(conn, args):
         while size < file_size:
             size += file.write(conn.recv(BUFSIZE))
 
+    logging.info(f'received {size} bytes')
     logging.info(f'uploaded \'{file_name}\'')
 
 def server_download(conn, args):
@@ -44,9 +45,13 @@ def server_download(conn, args):
     logging.info('downloading . . .')
 
     with open(file_name, mode='rb') as file:
+        size = 0
+
         for data in iter(lambda: file.read(BUFSIZE), b''):
             conn.send(data)
+            size += len(data)
 
+    logging.info(f'transmitted {size} bytes')
     logging.info(f'downloaded \'{file_name}\'')
 
 def server_unknown(conn, args):
