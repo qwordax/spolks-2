@@ -5,16 +5,16 @@ BUFSIZE = 1024
 OOBSIZE = 4
 
 def client_echo(sock, args):
-    sock.send(' '.join(args).encode('ascii'))
-    print(sock.recv(BUFSIZE).decode('ascii'), end='')
+    sock.send(' '.join(args).encode())
+    print(sock.recv(BUFSIZE).decode(), end='')
 
 def client_time(sock, args):
     if len(args) != 1:
         print('usage: time')
         return
 
-    sock.send(' '.join(args).encode('ascii'))
-    print(sock.recv(BUFSIZE).decode('ascii'), end='')
+    sock.send(' '.join(args).encode())
+    print(sock.recv(BUFSIZE).decode(), end='')
 
 def client_upload(sock, args):
     if len(args) != 2:
@@ -25,13 +25,13 @@ def client_upload(sock, args):
         print(f'error: \'{args[1]}\' does not exists')
         return
 
-    sock.send(' '.join(args).encode('ascii'))
+    sock.send(' '.join(args).encode())
 
     file_name = args[1]
     file_size = os.path.getsize(args[1])
 
     file_info = file_name + ' ' + str(file_size)
-    sock.send(file_info.encode('ascii'))
+    sock.send(file_info.encode())
 
     print('upload: started')
 
@@ -67,14 +67,14 @@ def client_download(sock, args):
         print('usage: download <file>')
         return
 
-    sock.send(' '.join(args).encode('ascii'))
-    response = sock.recv(BUFSIZE).decode('ascii')
+    sock.send(' '.join(args).encode())
+    response = sock.recv(BUFSIZE).decode()
 
     if response == 'not exists':
         print(f'error: \'{args[1]}\' does not exists')
         return
 
-    file_info = sock.recv(BUFSIZE).decode('ascii').split()
+    file_info = sock.recv(BUFSIZE).decode().split()
 
     file_name = file_info[0]
     file_size = int(file_info[1])
@@ -83,7 +83,7 @@ def client_download(sock, args):
         file = open(file_name, 'ab')
 
         current_size = os.path.getsize(file_name)
-        sock.send(str(current_size).encode('ascii'))
+        sock.send(str(current_size).encode())
 
         print('download: continued')
     else:
@@ -116,5 +116,5 @@ def client_download(sock, args):
         file.close()
 
 def client_unknown(sock, args):
-    sock.send(' '.join(args).encode('ascii'))
-    print(sock.recv(BUFSIZE).decode('ascii'), end='')
+    sock.send(' '.join(args).encode())
+    print(sock.recv(BUFSIZE).decode(), end='')

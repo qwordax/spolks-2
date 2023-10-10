@@ -13,14 +13,14 @@ fatal = False
 
 def server_echo(conn, args):
     response = '\n'.join(args[1:]) + '\n'
-    conn.send(response.encode('ascii'))
+    conn.send(response.encode())
 
 def server_time(conn, args):
     response = time.ctime() + '\n'
-    conn.send(response.encode('ascii'))
+    conn.send(response.encode())
 
 def server_upload(conn, args):
-    file_info = conn.recv(BUFSIZE).decode('ascii').split()
+    file_info = conn.recv(BUFSIZE).decode().split()
 
     file_name = file_info[0]
     file_size = int(file_info[1])
@@ -57,7 +57,7 @@ def server_download(conn, address, args):
     global fatal
 
     if not os.path.exists(args[1]):
-        conn.send('not exists'.encode('ascii'))
+        conn.send('not exists'.encode())
         return
 
     file_name = args[1]
@@ -67,22 +67,22 @@ def server_download(conn, address, args):
         last_address == address and
         last_file_name == file_name and
         fatal is True):
-        conn.send('continue'.encode('ascii'))
+        conn.send('continue'.encode())
 
         file_info = file_name + ' ' + str(file_size)
-        conn.send(file_info.encode('ascii'))
+        conn.send(file_info.encode())
 
         logging.info('continue downloading . . .')
 
         file = open(file_name, mode='rb')
 
-        current_size = int(conn.recv(BUFSIZE).decode('ascii'))
+        current_size = int(conn.recv(BUFSIZE).decode())
         file.seek(current_size)
     else:
-        conn.send('exists'.encode('ascii'))
+        conn.send('exists'.encode())
 
         file_info = file_name + ' ' + str(file_size)
-        conn.send(file_info.encode('ascii'))
+        conn.send(file_info.encode())
 
         logging.info('downloading . . .')
 
@@ -126,4 +126,4 @@ def server_unknown(conn, args):
     logging.error(f'unknown command \'{" ".join(args)}\'')
 
     response = f'error: unknown command \'{" ".join(args)}\'\n'
-    conn.send(response.encode('ascii'))
+    conn.send(response.encode())
