@@ -78,12 +78,23 @@ def client_download(sock, args):
     print('download: started')
 
     with open(file_name, 'wb') as file:
+        i = 0
         size = 0
+        oob_size = 0
 
-        while size < file_size:
-            size += file.write(sock.recv(BUFSIZE))
+        while (size + oob_size) < file_size:
+            if i < OOBSIZE:
+                sock.setsockopt(socket.SOL_SOCKET, socket.SO_OOBINLINE, 1)
+                oob_size += file.write(sock.recv(BUFSIZE))
+                sock.setsockopt(socket.SOL_SOCKET, socket.SO_OOBINLINE, 0)
+            else:
+                size += file.write(sock.recv(BUFSIZE))
+
+            i += 1
 
     print(f'download: received {size} bytes')
+    print(f'download: received {oob_size} urgent bytes')
+
     print('download: ended')
 
 def client_unknown(sock, args):

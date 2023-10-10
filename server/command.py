@@ -58,13 +58,26 @@ def server_download(conn, args):
     logging.info('downloading . . .')
 
     with open(file_name, mode='rb') as file:
+        i = 0
         size = 0
+        oob_size = 0
 
         for data in iter(lambda: file.read(BUFSIZE), b''):
-            conn.send(data)
-            size += len(data)
+            if i < OOBSIZE:
+                conn.setsockopt(socket.SOL_SOCKET, socket.SO_OOBINLINE, 1)
+                conn.send(data)
+                conn.setsockopt(socket.SOL_SOCKET, socket.SO_OOBINLINE, 0)
+
+                oob_size += len(data)
+            else:
+                conn.send(data)
+                size += len(data)
+
+            i += 1
 
     logging.info(f'transmitted {size} bytes')
+    logging.info(f'transmitted {oob_size} urgent bytes')
+
     logging.info(f'downloaded \'{file_name}\'')
 
 def server_unknown(conn, args):
