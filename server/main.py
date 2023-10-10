@@ -26,12 +26,17 @@ def main():
     sock.listen(1)
 
     working = True
+    timeout = 0
 
-    while working:
+    while working and timeout < 3:
         logging.info('accepting . . .')
 
-        conn, address = sock.accept()
-        logging.info(f'accepted {address[0] + ":" + str(address[1])}')
+        try:
+            conn, address = sock.accept()
+            logging.info(f'accepted {address[0] + ":" + str(address[1])}')
+        except TimeoutError:
+            logging.error('timed out'); timeout += 1
+            continue
 
         try:
             while True:
