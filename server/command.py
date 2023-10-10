@@ -6,11 +6,6 @@ import time
 BUFSIZE = 1024
 OOBSIZE = 4
 
-last_address = ''
-last_file_name = ''
-
-fatal = False
-
 def server_echo(conn, args):
     response = '\n'.join(args[1:]) + '\n'
     conn.send(response.encode('ascii'))
@@ -19,14 +14,11 @@ def server_time(conn, args):
     response = time.ctime() + '\n'
     conn.send(response.encode('ascii'))
 
-def server_upload(conn, address, args):
+def server_upload(conn, args):
     file_info = conn.recv(BUFSIZE).decode('ascii').split()
 
     file_name = file_info[0]
     file_size = int(file_info[1])
-
-    last_address = address
-    last_file_name = file_name
 
     logging.info('uploading . . .')
 
@@ -45,12 +37,12 @@ def server_upload(conn, address, args):
 
             i += 1
 
-    logging.info(f'received {size:,.0f} bytes')
     logging.info(f'received {oob_size:,.0f} urgent bytes')
+    logging.info(f'received {size:,.0f} bytes')
 
     logging.info(f'uploaded \'{file_name}\'')
 
-def server_download(conn, address, args):
+def server_download(conn, args):
     if not os.path.exists(args[1]):
         conn.send('not exists'.encode('ascii'))
         return
@@ -62,9 +54,6 @@ def server_download(conn, address, args):
 
     file_info = file_name + ' ' + str(file_size)
     conn.send(file_info.encode('ascii'))
-
-    last_address = address
-    last_file_name = file_name
 
     logging.info('downloading . . .')
 
@@ -86,8 +75,8 @@ def server_download(conn, address, args):
 
             i += 1
 
-    logging.info(f'transmitted {size:,.0f} bytes')
     logging.info(f'transmitted {oob_size:,.0f} urgent bytes')
+    logging.info(f'transmitted {size:,.0f} bytes')
 
     logging.info(f'downloaded \'{file_name}\'')
 

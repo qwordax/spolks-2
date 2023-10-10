@@ -53,8 +53,8 @@ def client_upload(sock, args):
 
             i += 1
 
-    print(f'upload: transmitted {size:,.0f} bytes')
     print(f'upload: transmitted {oob_size:,.0f} urgent bytes')
+    print(f'upload: transmitted {size:,.0f} bytes')
 
     print('upload: ended')
 
@@ -92,8 +92,8 @@ def client_download(sock, args):
 
             i += 1
 
-    print(f'download: received {size:,.0f} bytes')
     print(f'download: received {oob_size:,.0f} urgent bytes')
+    print(f'download: received {size:,.0f} bytes')
 
     print('download: ended')
 
