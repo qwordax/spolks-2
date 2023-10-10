@@ -22,7 +22,9 @@ def server_upload(conn, args):
 
     logging.info('uploading . . .')
 
-    with open(file_name, 'wb') as file:
+    file = open(file_name, 'wb')
+
+    try:
         i = 0
         size = 0
         oob_size = 0
@@ -37,10 +39,12 @@ def server_upload(conn, args):
 
             i += 1
 
-    logging.info(f'received {oob_size:,.0f} urgent bytes')
-    logging.info(f'received {size:,.0f} bytes')
+        logging.info(f'received {oob_size:,.0f} urgent bytes')
+        logging.info(f'received {size:,.0f} bytes')
 
-    logging.info(f'uploaded \'{file_name}\'')
+        logging.info(f'uploaded \'{file_name}\'')
+    finally:
+        file.close()
 
 def server_download(conn, args):
     if not os.path.exists(args[1]):
@@ -57,7 +61,9 @@ def server_download(conn, args):
 
     logging.info('downloading . . .')
 
-    with open(file_name, mode='rb') as file:
+    file = open(file_name, mode='rb')
+
+    try:
         i = 0
         size = 0
         oob_size = 0
@@ -75,10 +81,12 @@ def server_download(conn, args):
 
             i += 1
 
-    logging.info(f'transmitted {oob_size:,.0f} urgent bytes')
-    logging.info(f'transmitted {size:,.0f} bytes')
+        logging.info(f'transmitted {oob_size:,.0f} urgent bytes')
+        logging.info(f'transmitted {size:,.0f} bytes')
 
-    logging.info(f'downloaded \'{file_name}\'')
+        logging.info(f'downloaded \'{file_name}\'')
+    finally:
+        file.close()
 
 def server_unknown(conn, args):
     logging.error(f'unknown command \'{" ".join(args)}\'')

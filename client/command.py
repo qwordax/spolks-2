@@ -35,7 +35,9 @@ def client_upload(sock, args):
 
     print('upload: started')
 
-    with open(file_name, mode='rb') as file:
+    file = open(file_name, mode='rb')
+
+    try:
         i = 0
         size = 0
         oob_size = 0
@@ -53,10 +55,12 @@ def client_upload(sock, args):
 
             i += 1
 
-    print(f'upload: transmitted {oob_size:,.0f} urgent bytes')
-    print(f'upload: transmitted {size:,.0f} bytes')
+        print(f'upload: transmitted {oob_size:,.0f} urgent bytes')
+        print(f'upload: transmitted {size:,.0f} bytes')
 
-    print('upload: ended')
+        print('upload: ended')
+    finally:
+        file.close()
 
 def client_download(sock, args):
     if len(args) != 2:
@@ -77,7 +81,9 @@ def client_download(sock, args):
 
     print('download: started')
 
-    with open(file_name, 'wb') as file:
+    file = open(file_name, 'wb')
+
+    try:
         i = 0
         size = 0
         oob_size = 0
@@ -92,10 +98,12 @@ def client_download(sock, args):
 
             i += 1
 
-    print(f'download: received {oob_size:,.0f} urgent bytes')
-    print(f'download: received {size:,.0f} bytes')
+        print(f'download: received {oob_size:,.0f} urgent bytes')
+        print(f'download: received {size:,.0f} bytes')
 
-    print('download: ended')
+        print('download: ended')
+    finally:
+        file.close()
 
 def client_unknown(sock, args):
     sock.send(' '.join(args).encode('ascii'))
