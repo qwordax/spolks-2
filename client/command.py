@@ -79,16 +79,26 @@ def client_download(sock, args):
     file_name = file_info[0]
     file_size = int(file_info[1])
 
-    print('download: started')
+    if response == 'continue':
+        file = open(file_name, 'ab')
 
-    file = open(file_name, 'wb')
+        current_size = os.path.getsize(file_name)
+        sock.send(str(current_size).encode('ascii'))
+
+        print('download: continued')
+    else:
+        file = open(file_name, 'wb')
+
+        current_size = 0
+
+        print('download: started')
 
     try:
         i = 0
         size = 0
         oob_size = 0
 
-        while (size + oob_size) < file_size:
+        while (current_size + size + oob_size) < file_size:
             if i < OOBSIZE:
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_OOBINLINE, 1)
                 oob_size += file.write(sock.recv(BUFSIZE))

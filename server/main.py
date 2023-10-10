@@ -58,7 +58,7 @@ def main():
                 elif args[0] == 'upload':
                     command.server_upload(conn, args)
                 elif args[0] == 'download':
-                    command.server_download(conn, args)
+                    command.server_download(conn, address[0], args)
                 else:
                     command.server_unknown(conn, args)
         except TimeoutError:
