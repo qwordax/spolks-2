@@ -2,7 +2,6 @@ import os
 import socket
 
 BUFSIZE = 1024
-OOBSIZE = 4
 
 def client_echo(sock, args):
     sock.send(' '.join(args).encode('ascii'))
@@ -39,11 +38,13 @@ def client_upload(sock, args):
 
     try:
         i = 0
+        oob = file_size // 1024 // 4
+
         size = 0
         oob_size = 0
 
         for data in iter(lambda: file.read(BUFSIZE), b''):
-            if i < OOBSIZE:
+            if i < oob:
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_OOBINLINE, 1)
                 sock.send(data)
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_OOBINLINE, 0)
@@ -85,11 +86,13 @@ def client_download(sock, args):
 
     try:
         i = 0
+        oob = file_size // 1024 // 4
+
         size = 0
         oob_size = 0
 
         while (size + oob_size) < file_size:
-            if i < OOBSIZE:
+            if i < oob:
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_OOBINLINE, 1)
                 oob_size += file.write(sock.recv(BUFSIZE))
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_OOBINLINE, 0)

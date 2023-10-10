@@ -4,7 +4,6 @@ import socket
 import time
 
 BUFSIZE = 1024
-OOBSIZE = 4
 
 def server_echo(conn, args):
     response = '\n'.join(args[1:]) + '\n'
@@ -26,11 +25,13 @@ def server_upload(conn, args):
 
     try:
         i = 0
+        oob = file_size // 1024 // 4
+
         size = 0
         oob_size = 0
 
         while (size + oob_size) < file_size:
-            if i < OOBSIZE:
+            if i < oob:
                 conn.setsockopt(socket.SOL_SOCKET, socket.SO_OOBINLINE, 1)
                 oob_size += file.write(conn.recv(BUFSIZE))
                 conn.setsockopt(socket.SOL_SOCKET, socket.SO_OOBINLINE, 0)
@@ -65,11 +66,13 @@ def server_download(conn, args):
 
     try:
         i = 0
+        oob = file_size // 1024 // 4
+
         size = 0
         oob_size = 0
 
         for data in iter(lambda: file.read(BUFSIZE), b''):
-            if i < OOBSIZE:
+            if i < oob:
                 conn.setsockopt(socket.SOL_SOCKET, socket.SO_OOBINLINE, 1)
                 conn.send(data)
                 conn.setsockopt(socket.SOL_SOCKET, socket.SO_OOBINLINE, 0)
