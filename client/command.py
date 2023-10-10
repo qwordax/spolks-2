@@ -31,7 +31,7 @@ def client_upload(sock, args):
     file_size = os.path.getsize(args[1])
 
     file_info = file_name + ' ' + str(file_size)
-    sock.send(file_info.encode('ascii', errors='ignore'))
+    sock.send(file_info.encode('ascii'))
 
     print('upload: started')
 
@@ -67,8 +67,8 @@ def client_download(sock, args):
         print('usage: download <file>')
         return
 
-    sock.send(' '.join(args).encode())
-    response = sock.recv(BUFSIZE).decode()
+    sock.send(' '.join(args).encode('ascii'))
+    response = sock.recv(BUFSIZE).decode('ascii')
 
     if response == 'not exists':
         print(f'error: \'{args[1]}\' does not exists')
@@ -79,26 +79,16 @@ def client_download(sock, args):
     file_name = file_info[0]
     file_size = int(file_info[1])
 
-    if response == 'continue':
-        file = open(file_name, 'ab')
+    print('download: started')
 
-        current_size = os.path.getsize(file_name)
-        sock.send(str(current_size).encode('ascii'))
-
-        print('download: continued')
-    else:
-        file = open(file_name, 'wb')
-
-        current_size = 0
-
-        print('download: started')
+    file = open(file_name, 'wb')
 
     try:
         i = 0
         size = 0
         oob_size = 0
 
-        while (current_size + size + oob_size) < file_size:
+        while (size + oob_size) < file_size:
             if i < OOBSIZE:
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_OOBINLINE, 1)
                 oob_size += file.write(sock.recv(BUFSIZE))

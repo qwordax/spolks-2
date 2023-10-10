@@ -6,11 +6,6 @@ import time
 BUFSIZE = 1024
 OOBSIZE = 4
 
-last_address = None
-last_file_name = None
-
-fatal = False
-
 def server_echo(conn, args):
     response = '\n'.join(args[1:]) + '\n'
     conn.send(response.encode('ascii'))
@@ -20,7 +15,7 @@ def server_time(conn, args):
     conn.send(response.encode('ascii'))
 
 def server_upload(conn, args):
-    file_info = conn.recv(BUFSIZE).decode('ascii', errors='ignore').split()
+    file_info = conn.recv(BUFSIZE).decode('ascii').split()
 
     file_name = file_info[0]
     file_size = int(file_info[1])
@@ -51,46 +46,22 @@ def server_upload(conn, args):
     finally:
         file.close()
 
-def server_download(conn, address, args):
-    global last_address
-    global last_file_name
-    global fatal
-
+def server_download(conn, args):
     if not os.path.exists(args[1]):
         conn.send('not exists'.encode('ascii'))
         return
 
+    conn.send('exists'.encode('ascii'))
+
     file_name = args[1]
     file_size = os.path.getsize(args[1])
 
-    if (last_address is not None and
-        last_address == address and
-        last_file_name == file_name and
-        fatal is True):
-        conn.send('continue'.encode('ascii'))
+    file_info = file_name + ' ' + str(file_size)
+    conn.send(file_info.encode('ascii'))
 
-        file_info = file_name + ' ' + str(file_size)
-        conn.send(file_info.encode())
+    logging.info('downloading . . .')
 
-        logging.info('continue downloading . . .')
-
-        file = open(file_name, mode='rb')
-
-        current_size = int(conn.recv(BUFSIZE).decode('ascii'))
-        file.seek(current_size)
-    else:
-        conn.send('exists'.encode('ascii'))
-
-        file_info = file_name + ' ' + str(file_size)
-        conn.send(file_info.encode('ascii'))
-
-        logging.info('downloading . . .')
-
-        file = open(file_name, mode='rb')
-
-        current_size = 0
-
-    fatal = False
+    file = open(file_name, mode='rb')
 
     try:
         i = 0
@@ -114,11 +85,6 @@ def server_download(conn, address, args):
         logging.info(f'transmitted {size:,.0f} bytes')
 
         logging.info(f'downloaded \'{file_name}\'')
-    except TimeoutError:
-        last_address = address
-        last_file_name = file_name
-
-        logging.error(f'timed out')
     finally:
         file.close()
 
