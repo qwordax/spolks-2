@@ -37,8 +37,8 @@ def server_upload(conn, args):
 
             i += 1
 
-    logging.info(f'received {size} bytes')
-    logging.info(f'received {oob_size} urgent bytes')
+    logging.info(f'received {size:,.0f} bytes')
+    logging.info(f'received {oob_size:,.0f} urgent bytes')
 
     logging.info(f'uploaded \'{file_name}\'')
 
@@ -75,8 +75,8 @@ def server_download(conn, args):
 
             i += 1
 
-    logging.info(f'transmitted {size} bytes')
-    logging.info(f'transmitted {oob_size} urgent bytes')
+    logging.info(f'transmitted {size:,.0f} bytes')
+    logging.info(f'transmitted {oob_size:,.0f} urgent bytes')
 
     logging.info(f'downloaded \'{file_name}\'')
 
