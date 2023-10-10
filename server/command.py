@@ -9,11 +9,11 @@ def server_echo(conn, args):
     response = '\n'.join(args[1:]) + '\n'
     conn.send(response.encode('ascii'))
 
-def server_time(conn, args):
+def server_time(conn):
     response = time.ctime() + '\n'
     conn.send(response.encode('ascii'))
 
-def server_upload(conn, args):
+def server_upload(conn):
     file_info = conn.recv(BUFSIZE).decode('ascii').split()
 
     file_name = file_info[0]
@@ -40,9 +40,7 @@ def server_upload(conn, args):
 
             i += 1
 
-        logging.info(f'received {oob_size:,.0f} urgent bytes')
-        logging.info(f'received {size:,.0f} bytes')
-
+        logging.info(f'received {size:,.0f} + {oob_size:,.0f} bytes')
         logging.info(f'uploaded \'{file_name}\'')
     finally:
         file.close()
@@ -84,9 +82,7 @@ def server_download(conn, args):
 
             i += 1
 
-        logging.info(f'transmitted {oob_size:,.0f} urgent bytes')
-        logging.info(f'transmitted {size:,.0f} bytes')
-
+        logging.info(f'transmitted {size:,.0f} + {oob_size:,.0f} bytes')
         logging.info(f'downloaded \'{file_name}\'')
     finally:
         file.close()
