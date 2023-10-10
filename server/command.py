@@ -6,6 +6,11 @@ import time
 BUFSIZE = 1024
 OOBSIZE = 4
 
+last_address = ''
+last_file_name = ''
+
+fatal = False
+
 def server_echo(conn, args):
     response = '\n'.join(args[1:]) + '\n'
     conn.send(response.encode('ascii'))
@@ -14,11 +19,14 @@ def server_time(conn, args):
     response = time.ctime() + '\n'
     conn.send(response.encode('ascii'))
 
-def server_upload(conn, args):
+def server_upload(conn, address, args):
     file_info = conn.recv(BUFSIZE).decode('ascii').split()
 
     file_name = file_info[0]
     file_size = int(file_info[1])
+
+    last_address = address
+    last_file_name = file_name
 
     logging.info('uploading . . .')
 
@@ -42,7 +50,7 @@ def server_upload(conn, args):
 
     logging.info(f'uploaded \'{file_name}\'')
 
-def server_download(conn, args):
+def server_download(conn, address, args):
     if not os.path.exists(args[1]):
         conn.send('not exists'.encode('ascii'))
         return
@@ -54,6 +62,9 @@ def server_download(conn, args):
 
     file_info = file_name + ' ' + str(file_size)
     conn.send(file_info.encode('ascii'))
+
+    last_address = address
+    last_file_name = file_name
 
     logging.info('downloading . . .')
 
