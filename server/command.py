@@ -19,6 +19,8 @@ def server_upload(conn):
     file_name = file_info[0]
     file_size = int(file_info[1])
 
+    conn.send('ok'.encode('ascii'))
+
     logging.info('uploading . . .')
 
     with open(file_name, 'wb') as file:
@@ -53,6 +55,8 @@ def server_download(conn, args):
 
     file_info = file_name + ' ' + str(file_size)
     conn.send(file_info.encode('ascii'))
+
+    conn.recv(BUFSIZE).decode('ascii')
 
     logging.info('downloading . . .')
 

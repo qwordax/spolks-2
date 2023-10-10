@@ -32,6 +32,8 @@ def client_upload(sock, args):
     file_info = file_name + ' ' + str(file_size)
     sock.send(file_info.encode('ascii'))
 
+    sock.recv(BUFSIZE).decode('ascii')
+
     print('upload: started')
 
     with open(file_name, mode='rb') as file:
@@ -73,6 +75,8 @@ def client_download(sock, args):
 
     file_name = file_info[0]
     file_size = int(file_info[1])
+
+    sock.send('ok'.encode('ascii'))
 
     print('download: started')
 
