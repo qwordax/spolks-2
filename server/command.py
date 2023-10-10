@@ -1,8 +1,10 @@
 import logging
 import os
+import socket
 import time
 
 BUFSIZE = 1024
+OOBSIZE = 4
 
 def server_echo(conn, args):
     response = '\n'.join(args[1:]) + '\n'
@@ -21,12 +23,23 @@ def server_upload(conn, args):
     logging.info('uploading . . .')
 
     with open(file_name, 'wb') as file:
+        i = 0
         size = 0
+        oob_size = 0
 
-        while size < file_size:
-            size += file.write(conn.recv(BUFSIZE))
+        while (size + oob_size) < file_size:
+            if i < OOBSIZE:
+                conn.setsockopt(socket.SOL_SOCKET, socket.SO_OOBINLINE, 1)
+                oob_size += file.write(conn.recv(BUFSIZE))
+                conn.setsockopt(socket.SOL_SOCKET, socket.SO_OOBINLINE, 0)
+            else:
+                size += file.write(conn.recv(BUFSIZE))
+
+            i += 1
 
     logging.info(f'received {size} bytes')
+    logging.info(f'received {oob_size} urgent bytes')
+
     logging.info(f'uploaded \'{file_name}\'')
 
 def server_download(conn, args):
