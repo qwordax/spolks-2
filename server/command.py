@@ -40,7 +40,7 @@ def server_upload(conn):
 
             if i % 512 == 0:
                 logging.info(
-                    f'{int(100 * (size + oob_size) / file_size):3d} %'
+                    f'{int(100 * (size+oob_size) / file_size):3d} %'
                     )
 
             i += 1
@@ -86,7 +86,7 @@ def server_download(conn, args):
 
             if i % 512 == 0:
                 logging.info(
-                    f'{int(100 * (size + oob_size) / file_size):3d} %'
+                    f'{int(100 * (size+oob_size) / file_size):3d} %'
                     )
 
             i += 1

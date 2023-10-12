@@ -56,7 +56,7 @@ def client_upload(sock, args):
 
             if i % 512 == 0:
                 print(
-                    f'upload: {int(100 * (size + oob_size) / file_size):3d} %'
+                    f'upload: {int(100 * (size+oob_size) / file_size):3d} %'
                     )
 
             i += 1
@@ -103,7 +103,7 @@ def client_download(sock, args):
 
             if i % 512 == 0:
                 print(
-                    f'download: {int(100 * (size + oob_size) / file_size):3d} %'
+                    f'download: {int(100 * (size+oob_size) / file_size):3d} %'
                     )
 
             i += 1
