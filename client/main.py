@@ -39,6 +39,9 @@ def main():
         except ConnectionAbortedError:
             print('error: connection aborted')
             break
+        except ConnectionResetError:
+            print('error: connection reset')
+            break
 
     sock.close()
 
