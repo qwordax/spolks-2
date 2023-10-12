@@ -13,7 +13,11 @@ def main():
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    sock.connect((address, port))
+    try:
+        sock.connect((address, port))
+    except TimeoutError:
+        print('error: timed out'); sock.close()
+        return
 
     while True:
         args = input('> ').split()
