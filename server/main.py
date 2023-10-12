@@ -14,7 +14,7 @@ def main():
 
     logging.basicConfig(
         level=logging.INFO,
-        format='%(levelname)-5s : %(message)s'
+        format='%(levelname)-8s : %(message)s'
         )
 
     socket.setdefaulttimeout(30)
@@ -35,7 +35,7 @@ def main():
             conn, address = sock.accept()
             logging.info(f'accepted {address[0] + ":" + str(address[1])}')
         except TimeoutError:
-            logging.error('timed out'); timeout += 1
+            logging.info('timed out'); timeout += 1
             continue
 
         try:
@@ -62,7 +62,7 @@ def main():
                 else:
                     command.server_unknown(conn, args)
         except TimeoutError:
-            logging.error(f'timed out {address[0] + ":" + str(address[1])}')
+            logging.critical(f'timed out {address[0] + ":" + str(address[1])}')
         finally:
             logging.info(f'closed {address[0] + ":" + str(address[1])}')
             conn.close()
