@@ -82,15 +82,19 @@ def client_download(sock, args):
     file_name = file_info[0]
     file_size = int(file_info[1])
 
-    sock.send('ok'.encode('ascii'))
+    current_size = 0
+
+    sock.send(str(current_size).encode('ascii'))
 
     print('download: started')
 
     with open(file_name, 'wb') as file:
+        file.seek(current_size)
+
         i = 0
         oob = file_size // 1024 // 4
 
-        size = 0
+        size = current_size
         oob_size = 0
 
         while (size + oob_size) < file_size:

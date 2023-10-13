@@ -62,15 +62,17 @@ def server_download(conn, args):
     file_info = file_name + ' ' + str(file_size)
     conn.send(file_info.encode('ascii'))
 
-    conn.recv(BUFSIZE).decode('ascii')
+    current_size = int(conn.recv(BUFSIZE).decode('ascii'))
 
     logging.info('downloading . . .')
 
     with open(file_name, mode='rb') as file:
+        file.seek(current_size)
+
         i = 0
         oob = file_size // 1024 // 4
 
-        size = 0
+        size = current_size
         oob_size = 0
 
         for data in iter(lambda: file.read(BUFSIZE), b''):
