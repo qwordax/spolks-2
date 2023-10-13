@@ -32,15 +32,17 @@ def client_upload(sock, args):
     file_info = file_name + ' ' + str(file_size)
     sock.send(file_info.encode('ascii'))
 
-    sock.recv(BUFSIZE).decode('ascii')
+    current_size = int(sock.recv(BUFSIZE).decode('ascii'))
 
     print('upload: started')
 
     with open(file_name, mode='rb') as file:
+        file.seek(current_size)
+
         i = 0
         oob = file_size // 1024 // 4
 
-        size = 0
+        size = current_size
         oob_size = 0
 
         for data in iter(lambda: file.read(BUFSIZE), b''):
