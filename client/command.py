@@ -34,8 +34,6 @@ def client_upload(sock, args):
 
     current_size = int(sock.recv(BUFSIZE).decode('ascii'))
 
-    print('upload: started')
-
     with open(file_name, mode='rb') as file:
         file.seek(current_size)
 
@@ -58,14 +56,13 @@ def client_upload(sock, args):
 
             if i % 512 == 0:
                 print(
-                    f'upload: {int(100 * (size+oob_size) / file_size):3d} %'
+                    f'{int(100 * (size+oob_size) / file_size):3d} %'
                     )
 
             i += 1
 
-        print('upload: 100 %')
-        print(f'upload: transmitted {size:,.0f} + {oob_size:,.0f} bytes')
-        print('upload: ended')
+        print('100 %')
+        print(f'transmitted {size:,.0f} + {oob_size:,.0f} bytes')
 
 def client_download(sock, args):
     if len(args) != 2:
@@ -88,8 +85,6 @@ def client_download(sock, args):
 
     sock.send(str(current_size).encode('ascii'))
 
-    print('download: started')
-
     with open(file_name, 'wb') as file:
         file.seek(current_size)
 
@@ -109,14 +104,13 @@ def client_download(sock, args):
 
             if i % 512 == 0:
                 print(
-                    f'download: {int(100 * (size+oob_size) / file_size):3d} %'
+                    f'{int(100 * (size+oob_size) / file_size):3d} %'
                     )
 
             i += 1
 
-        print('download: 100 %')
-        print(f'download: received {size:,.0f} + {oob_size:,.0f} bytes')
-        print('download: ended')
+        print('100 %')
+        print(f'received {size:,.0f} + {oob_size:,.0f} bytes')
 
 def client_unknown(sock, args):
     sock.send(' '.join(args).encode('ascii'))
