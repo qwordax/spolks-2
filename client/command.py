@@ -34,13 +34,13 @@ def client_upload(sock, args):
 
     current_size = int(sock.recv(BUFSIZE).decode('ascii'))
 
-    with open(file_name, mode='rb') as file:
+    with open(file_name, 'rb') as file:
         file.seek(current_size)
 
         i = 0
         oob = file_size // 1024 // 4
 
-        size = current_size
+        size = 0
         oob_size = 0
 
         for data in iter(lambda: file.read(BUFSIZE), b''):
@@ -54,10 +54,10 @@ def client_upload(sock, args):
                 sock.send(data)
                 size += len(data)
 
+            full_size = current_size+size+oob_size
+
             if i % 512 == 0:
-                print(
-                    f'{int(100 * (size+oob_size) / file_size):3d} %'
-                    )
+                print(f'{int(100*full_size/file_size):3d} %')
 
             i += 1
 
@@ -85,21 +85,21 @@ def client_download(sock, args):
 
     if is_continue:
         current_size = os.path.getsize(file_name)
+        file_mode = 'ab'
     else:
         current_size = 0
+        file_mode = 'wb'
 
     sock.send(str(current_size).encode('ascii'))
 
-    with open(file_name, 'wb') as file:
-        file.seek(current_size)
-
+    with open(file_name, file_mode) as file:
         i = 0
         oob = file_size // 1024 // 4
 
-        size = current_size
+        size = 0
         oob_size = 0
 
-        while (size + oob_size) < file_size:
+        while (current_size + size + oob_size) < file_size:
             if i < oob:
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_OOBINLINE, 1)
                 oob_size += file.write(sock.recv(BUFSIZE))
@@ -107,10 +107,10 @@ def client_download(sock, args):
             else:
                 size += file.write(sock.recv(BUFSIZE))
 
+            full_size = current_size+size+oob_size
+
             if i % 512 == 0:
-                print(
-                    f'{int(100 * (size+oob_size) / file_size):3d} %'
-                    )
+                print(f'{int(100*full_size/file_size):3d} %')
 
             i += 1
 

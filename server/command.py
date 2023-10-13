@@ -31,12 +31,15 @@ def server_upload(conn, address):
 
     is_continue = (last_address is not None and
                    last_address == address[0] and
-                   last_file_name == file_name)
+                   last_file_name == file_name and
+                   FATAL is True)
 
     if is_continue:
         current_size = os.path.getsize(file_name)
+        file_mode = 'ab'
     else:
         current_size = 0
+        file_mode = 'wb'
 
     conn.send(str(current_size).encode('ascii'))
 
@@ -47,16 +50,14 @@ def server_upload(conn, address):
     last_address = address[0]
     last_file_name = file_name
 
-    with open(file_name, 'wb') as file:
-        file.seek(current_size)
-
+    with open(file_name, file_mode) as file:
         i = 0
         oob = file_size // 1024 // 4
 
-        size = current_size
+        size = 0
         oob_size = 0
 
-        while (size + oob_size) < file_size:
+        while (current_size + size + oob_size) < file_size:
             if i < oob:
                 conn.setsockopt(socket.SOL_SOCKET, socket.SO_OOBINLINE, 1)
                 oob_size += file.write(conn.recv(BUFSIZE))
@@ -64,10 +65,10 @@ def server_upload(conn, address):
             else:
                 size += file.write(conn.recv(BUFSIZE))
 
+            full_size = current_size+size+oob_size
+
             if i % 512 == 0:
-                logging.info(
-                    f'{int(100 * (size+oob_size) / file_size):3d} %'
-                    )
+                logging.info(f'{int(100*full_size/file_size):3d} %')
 
             i += 1
 
@@ -90,7 +91,8 @@ def server_download(conn, address, args):
 
     is_continue = (last_address is not None and
                    last_address == address[0] and
-                   last_file_name == file_name)
+                   last_file_name == file_name and
+                   FATAL is True)
 
     if is_continue:
         conn.send('continue'.encode('ascii'))
@@ -115,7 +117,7 @@ def server_download(conn, address, args):
         i = 0
         oob = file_size // 1024 // 4
 
-        size = current_size
+        size = 0
         oob_size = 0
 
         for data in iter(lambda: file.read(BUFSIZE), b''):
@@ -129,10 +131,10 @@ def server_download(conn, address, args):
                 conn.send(data)
                 size += len(data)
 
+            full_size = current_size+size+oob_size
+
             if i % 512 == 0:
-                logging.info(
-                    f'{int(100 * (size+oob_size) / file_size):3d} %'
-                    )
+                logging.info(f'{int(100*full_size/file_size):3d} %')
 
             i += 1
 
