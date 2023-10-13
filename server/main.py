@@ -56,7 +56,7 @@ def main():
                 elif args[0] == 'time':
                     command.server_time(conn)
                 elif args[0] == 'upload':
-                    command.server_upload(conn)
+                    command.server_upload(conn, address)
                 elif args[0] == 'download':
                     command.server_download(conn, address, args)
                 else:

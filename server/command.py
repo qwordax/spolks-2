@@ -18,19 +18,34 @@ def server_time(conn):
     response = time.ctime() + '\n'
     conn.send(response.encode('ascii'))
 
-def server_upload(conn):
+def server_upload(conn, address):
+    global FATAL
+
+    global last_address
+    global last_file_name
+
     file_info = conn.recv(BUFSIZE).decode('ascii').split()
 
     file_name = file_info[0]
     file_size = int(file_info[1])
 
-    current_size = 0
+    is_continue = (last_address is not None and
+                   last_address == address[0] and
+                   last_file_name == file_name)
+
+    if is_continue:
+        current_size = os.path.getsize(file_name)
+    else:
+        current_size = 0
 
     conn.send(str(current_size).encode('ascii'))
 
     logging.info('uploading . . .')
 
     FATAL = False
+
+    last_address = address[0]
+    last_file_name = file_name
 
     with open(file_name, 'wb') as file:
         file.seek(current_size)
@@ -61,6 +76,8 @@ def server_upload(conn):
         logging.info(f'uploaded \'{file_name}\'')
 
 def server_download(conn, address, args):
+    global FATAL
+
     global last_address
     global last_file_name
 
