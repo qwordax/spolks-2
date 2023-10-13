@@ -11,6 +11,8 @@ def main():
     address = sys.argv[1]
     port = int(sys.argv[2])
 
+    socket.setdefaulttimeout(30)
+
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -45,6 +47,9 @@ def main():
             break
         except ConnectionResetError:
             print('error: connection reset')
+            break
+        except TimeoutError:
+            print('error: timeout')
             break
 
     sock.close()

@@ -35,7 +35,7 @@ def main():
             conn, address = sock.accept()
             logging.info(f'accepted {address[0] + ":" + str(address[1])}')
         except TimeoutError:
-            logging.info('timed out'); timeout += 1
+            logging.info('timeout'); timeout += 1
             continue
 
         try:
@@ -61,11 +61,25 @@ def main():
                     command.server_download(conn, address, args)
                 else:
                     command.server_unknown(conn, args)
+        except ConnectionAbortedError:
+            command.FATAL = True
+
+            logging.critical(
+                f'connection aborted {address[0]+":"+str(address[1])}')
+        except ConnectionResetError:
+            command.FATAL = True
+
+            logging.critical(
+                f'connection reset {address[0]+":"+str(address[1])}')
         except TimeoutError:
             command.FATAL = True
-            logging.critical(f'timed out {address[0] + ":" + str(address[1])}')
+
+            logging.critical(
+                f'timeout {address[0]+":"+str(address[1])}')
         finally:
-            logging.info(f'closed {address[0] + ":" + str(address[1])}')
+            logging.info(
+                f'closed {address[0]+":"+str(address[1])}')
+
             conn.close()
 
     logging.info('closing . . .')
