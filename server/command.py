@@ -5,6 +5,9 @@ import time
 
 FATAL = False
 
+last_address = None
+last_file_name = None
+
 BUFSIZE = 1024
 
 def server_echo(conn, args):
@@ -57,15 +60,25 @@ def server_upload(conn):
         logging.info(f'received {size:,.0f} + {oob_size:,.0f} bytes')
         logging.info(f'uploaded \'{file_name}\'')
 
-def server_download(conn, args):
+def server_download(conn, address, args):
+    global last_address
+    global last_file_name
+
     if not os.path.exists(args[1]):
         conn.send('not exists'.encode('ascii'))
         return
 
-    conn.send('exists'.encode('ascii'))
-
     file_name = args[1]
     file_size = os.path.getsize(args[1])
+
+    is_continue = (last_address is not None and
+                   last_address == address[0] and
+                   last_file_name == file_name)
+
+    if is_continue:
+        conn.send('continue'.encode('ascii'))
+    else:
+        conn.send('exists'.encode('ascii'))
 
     file_info = file_name + ' ' + str(file_size)
     conn.send(file_info.encode('ascii'))
@@ -74,7 +87,10 @@ def server_download(conn, args):
 
     logging.info('downloading . . .')
 
-    FATAL = True
+    FATAL = False
+
+    last_address = address[0]
+    last_file_name = file_name
 
     with open(file_name, mode='rb') as file:
         file.seek(current_size)

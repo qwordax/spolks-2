@@ -76,12 +76,17 @@ def client_download(sock, args):
         print(f'error: \'{args[1]}\' does not exists')
         return
 
+    is_continue = response == 'continue'
+
     file_info = sock.recv(BUFSIZE).decode('ascii').split()
 
     file_name = file_info[0]
     file_size = int(file_info[1])
 
-    current_size = 0
+    if is_continue:
+        current_size = os.path.getsize(file_name)
+    else:
+        current_size = 0
 
     sock.send(str(current_size).encode('ascii'))
 
