@@ -3,6 +3,8 @@ import os
 import socket
 import time
 
+FATAL = False
+
 BUFSIZE = 1024
 
 def server_echo(conn, args):
@@ -24,6 +26,8 @@ def server_upload(conn):
     conn.send(str(current_size).encode('ascii'))
 
     logging.info('uploading . . .')
+
+    FATAL = False
 
     with open(file_name, 'wb') as file:
         file.seek(current_size)
@@ -69,6 +73,8 @@ def server_download(conn, args):
     current_size = int(conn.recv(BUFSIZE).decode('ascii'))
 
     logging.info('downloading . . .')
+
+    FATAL = True
 
     with open(file_name, mode='rb') as file:
         file.seek(current_size)

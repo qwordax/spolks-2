@@ -62,6 +62,7 @@ def main():
                 else:
                     command.server_unknown(conn, args)
         except TimeoutError:
+            command.FATAL = True
             logging.critical(f'timed out {address[0] + ":" + str(address[1])}')
         finally:
             logging.info(f'closed {address[0] + ":" + str(address[1])}')
